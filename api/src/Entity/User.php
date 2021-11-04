@@ -6,13 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @UniqueEntity("email", message="Cette email est déja utilisée")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -22,23 +26,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer")
      * @Groups({"parent_link"})
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Email(message="L'email fournie n'est pas valide")
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\ManyToMany(targetEntity=Kid::class, mappedBy="parent")
@@ -48,16 +53,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"parent_link"})
+     * @Assert\NotBlank(message="Veuillez saisir votre prénom")
      */
-    private $firstname;
+    private string $firstname;
 
     /**
      * @Groups({"parent_link"})
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez saisir votre nom")
      */
-    private $lastname;
+    private string $lastname;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->kids = new ArrayCollection();
     }
@@ -152,7 +159,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|Kid[]
+     * @return Collection
      */
     public function getKids(): Collection
     {

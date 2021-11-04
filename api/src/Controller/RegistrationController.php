@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -19,6 +20,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -27,13 +29,15 @@ class RegistrationController extends AbstractController
     private EntityManagerInterface $entityManager;
     private KidRepository $kidRepository;
     private UserRepository $userRepository;
+    private ValidatorInterface $validator;
 
     public function __construct(
         UserPasswordHasherInterface $passwordHasher,
         SerializerInterface         $serializer,
         EntityManagerInterface      $entityManager,
         KidRepository               $kidRepository,
-        UserRepository              $userRepository
+        UserRepository              $userRepository,
+        ValidatorInterface $validator
     )
     {
         $this->passwordHasher = $passwordHasher;
@@ -41,14 +45,21 @@ class RegistrationController extends AbstractController
         $this->entityManager = $entityManager;
         $this->kidRepository = $kidRepository;
         $this->userRepository = $userRepository;
+        $this->validator = $validator;
     }
 
     #[Route('/registration/parent', name: 'registration_parent', methods: 'POST')]
-    public function registrationParent(Request $request): JsonResponse
+    public function registrationParent(Request $request): Response
     {
         /** @var User $user */
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
+
+        $errors = $this->validator->validate($user);
+
+        if (count($errors) > 0) {
+            throw new BadRequestHttpException($errors->get(0)->getMessage());
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -61,6 +72,12 @@ class RegistrationController extends AbstractController
     {
         /** @var Kid $kid */
         $kid = $this->serializer->deserialize($request->getContent(), Kid::class, 'json');
+
+        $errors = $this->validator->validate($kid);
+
+        if (count($errors) > 0) {
+            throw new BadRequestHttpException($errors->get(0)->getMessage());
+        }
 
         $this->entityManager->persist($kid);
         $this->entityManager->flush();

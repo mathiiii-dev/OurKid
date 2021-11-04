@@ -1,13 +1,15 @@
 import '../styles/globals.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import {Container} from "react-bootstrap";
+import {NotificationsProvider} from '@mantine/notifications';
+import {Container, MantineProvider} from '@mantine/core';
 
-function MyApp({Component, pageProps}) {
+function App({Component, pageProps}) {
     return (
         <Container>
-            <Component {...pageProps}/>
+            <NotificationsProvider>
+                <Component {...pageProps}/>
+            </NotificationsProvider>
         </Container>
-    )
+    );
 }
 
-export default MyApp
+export default App

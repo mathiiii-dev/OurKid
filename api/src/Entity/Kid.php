@@ -6,7 +6,9 @@ use App\Repository\KidRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=KidRepository::class)
@@ -19,24 +21,27 @@ class Kid
      * @ORM\Column(type="integer")
      * @Groups({"kid_link"})
      */
-    private $id;
+    private int $id;
 
     /**
      * @Groups({"kid_link"})
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez saisir un prénom")
      */
-    private $firstname;
+    private string $firstname;
 
     /**
      * @Groups({"kid_link"})
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Veuillez saisir un nom")
      */
-    private $lastname;
+    private string $lastname;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank(message="Veuillez saisir une date de naissance")
      */
-    private $birthday;
+    private \DateTimeInterface $birthday;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="kids")
@@ -53,7 +58,7 @@ class Kid
      */
     private $dailyResumes;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->parent = new ArrayCollection();
         $this->calendars = new ArrayCollection();

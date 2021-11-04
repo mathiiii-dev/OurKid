@@ -1,9 +1,15 @@
-import {Button, Form, FormLabel, FormGroup, FormControl} from 'react-bootstrap';
-export default function Parent() {
+import {Input, InputWrapper, Button, PasswordInput} from "@mantine/core";
+import {useNotifications} from '@mantine/notifications';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faTimes, faCheck} from '@fortawesome/free-solid-svg-icons'
+
+function Parent() {
+    const notifications = useNotifications();
+
     const registerUser = async event => {
         event.preventDefault()
 
-         await fetch(
+        const res = await fetch(
             'http://127.0.0.1:8000/registration/parent',
             {
                 body: JSON.stringify({
@@ -18,28 +24,62 @@ export default function Parent() {
                 method: 'POST'
             }
         )
+
+        const result = await res.json()
+
+        if (res.status !== 200) {
+            notifications.showNotification({
+                title: "Erreur lors de l'envoie du formaulaire",
+                message: result.error_description,
+                color: "red",
+                icon: <FontAwesomeIcon icon={faTimes}/>
+            })
+        } else {
+            notifications.showNotification({
+                title: 'Bravo !',
+                message: 'Vous avez été enregistré avec succes',
+                color: "green",
+                icon: <FontAwesomeIcon icon={faCheck}/>
+            })
+        }
     }
 
     return (
-        <Form onSubmit={registerUser}>
-            <FormGroup className={"mb-3"} controlId={"firstname"}>
-                <FormLabel>Nom d'utilisateur</FormLabel>
-                <FormControl type={"text"} placeholder={"John Doe"}/>
-            </FormGroup>
-            <FormGroup className={"mb-3"} controlId={"lastname"}>
-                <FormLabel>Nom d'utilisateur</FormLabel>
-                <FormControl type={"text"} placeholder={"John Doe"}/>
-            </FormGroup>
-            <FormGroup className={"mb-3"} controlId={"email"}>
-                <FormLabel>Adresse email</FormLabel>
-                <FormControl type={"email"} placeholder={"mon-email@mail.com"}/>
-            </FormGroup>
-            <FormGroup className={"mb-3"} controlId={"password"}>
-                <FormLabel>Mot de passe</FormLabel>
-                <FormControl type={"password"} placeholder={"********"}/>
-            </FormGroup>
-            <Button type="submit">Inscription</Button>
-        </Form>
+        <>
+            <form onSubmit={registerUser}>
+                <InputWrapper
+                    id="firstname"
+                    required
+                    label="Prénom"
+                >
+                    <Input id="firstname" placeholder="Adele"/>
+                </InputWrapper>
+                <InputWrapper
+                    id="lastname"
+                    required
+                    label="Nom"
+                >
+                    <Input id="lastname" placeholder="Laurie"/>
+                </InputWrapper>
+                <PasswordInput
+                    id="password"
+                    placeholder="********"
+                    label="Mot de passe"
+                    required
+                />
+                <InputWrapper
+                    label="Email"
+                    required>
+                    <Input
+                        id="email"
+                        placeholder="my-email@mail.com"
+                    />
+                </InputWrapper>
+                <Button type="submit">Inscription</Button>
+            </form>
+        </>
+
     )
 }
 
+export default Parent

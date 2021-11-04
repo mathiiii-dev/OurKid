@@ -1,10 +1,10 @@
-import {Button, Form, FormSelect} from "react-bootstrap";
 import {useState} from "react";
+import {Select, Button} from "@mantine/core";
 
 function Link({kids, parents}) {
 
-    const [kid, setKid] = useState(1);
-    const [parent, setParent] = useState(2);
+    const [kid, setKid] = useState();
+    const [parent, setParent] = useState();
 
     const link = async event => {
         event.preventDefault()
@@ -17,37 +17,39 @@ function Link({kids, parents}) {
     }
 
     return (
-        <div>
-            <Form onSubmit={link}>
-                <FormSelect value={parent}
-                            onChange={
-                                (e) => {
-                                    setParent(e.target.value);
-                                }
-                            }>
-                    {parents.map((parent) => (
-                        <option value={parent.id} key={parent.id}>{parent.lastname}</option>
-                    ))}
-                </FormSelect>
-                <FormSelect value={kid}
-                            onChange={
-                                (a) => {
-                                    setKid(a.target.value);
-                                }
-                            }>
-                    {kids.map((kid) => (
-                        <option value={kid.id} key={kid.id}>{kid.lastname}</option>
-                    ))}
-                </FormSelect>
+            <form onSubmit={link}>
+                <Select
+                    searchable
+                    label="Parent"
+                    placeholder="Pick one"
+                    data={parents}
+                    value={parent} onChange={setParent}
+                />
+                <Select
+                    searchable
+                    label="Enfant"
+                    placeholder="Pick one"
+                    data={kids}
+                    value={kid} onChange={setKid}
+                />
+
                 <Button type="submit">Associer</Button>
-            </Form>
-        </div>
+            </form>
     )
 }
 
 export async function getStaticProps() {
-    const kids = await fetch('http://localhost:8000/kids').then(r => r.json())
-    const parents = await fetch('http://localhost:8000/parents').then(r => r.json())
+    const apiKids = await fetch('http://localhost:8000/kids').then(r => r.json())
+    const kids = []
+    apiKids.forEach(res => {
+        kids.push({value: res.id, label: res.firstname + ' ' + res.lastname})
+    })
+    const apiParents = await fetch('http://localhost:8000/parents').then(r => r.json())
+    const parents = []
+    apiParents.forEach(res => {
+        parents.push({value: res.id, label: res.firstname + ' ' + res.lastname})
+    })
+
     return {
         props: {
             kids,
