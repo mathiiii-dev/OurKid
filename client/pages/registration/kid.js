@@ -14,7 +14,7 @@ export default function Kid() {
 
     const registerKid = async event => {
         event.preventDefault()
-        console.log(event)
+
         const res = await fetch(
             'http://127.0.0.1:8000/registration/kid',
             {

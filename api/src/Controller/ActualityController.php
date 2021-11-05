@@ -44,4 +44,10 @@ class ActualityController extends AbstractController
         $actuality = $this->serializer->serialize($this->actualityRepository->find(['id' => $id]), 'json');
         return $this->json($actuality);
     }
+
+    #[Route('/actuality', name: 'actuality', methods: 'GET')]
+    public function actualities(): JsonResponse
+    {
+        return $this->json($this->actualityRepository->findAll());
+    }
 }
