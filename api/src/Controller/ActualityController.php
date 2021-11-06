@@ -26,7 +26,7 @@ class ActualityController extends AbstractController
     }
 
     #[Route('/actuality', name: 'actuality_create', methods: 'POST')]
-    public function create(Request $request): Response
+    public function create(Request $request): JsonResponse
     {
         /** @var Actuality $actuality */
         $actuality = $this->serializer->deserialize($request->getContent(), Actuality::class, 'json');
@@ -34,7 +34,9 @@ class ActualityController extends AbstractController
         $this->entityManager->persist($actuality);
         $this->entityManager->flush();
 
-        return $this->json('Actuality '.$actuality->getId(). ' created');
+        return new JsonResponse([
+            'id' => $actuality->getId()
+        ]);
     }
 
     #[Route('/actuality/{id}', name: 'actuality', methods: 'GET')]
@@ -48,6 +50,11 @@ class ActualityController extends AbstractController
     #[Route('/actuality', name: 'actuality', methods: 'GET')]
     public function actualities(): JsonResponse
     {
-        return $this->json($this->actualityRepository->findAll());
+        return $this->json(json_decode($this->serializer->serialize($this->actualityRepository->findAll(), 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]))
+        );
     }
 }
