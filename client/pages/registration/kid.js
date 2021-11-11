@@ -21,11 +21,8 @@ export default function Kid() {
                 body: JSON.stringify({
                     firstname: event.target.firstname.value,
                     lastname: event.target.lastname.value,
-                    birthday: birthday
+                    birthday
                 }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 method: 'POST'
             }
         )

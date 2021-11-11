@@ -1,65 +1,79 @@
-import {Button, Group, Image, InputWrapper, Paper, SimpleGrid, Text, Textarea, TextInput} from '@mantine/core';
+import {Button, Group, Image, InputWrapper, Space, Text, Textarea, TextInput} from '@mantine/core';
 import {useState} from "react";
 import {Dropzone} from "@mantine/dropzone";
+import {useForm} from '@mantine/hooks';
+import { useNotifications } from '@mantine/notifications';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck} from "@fortawesome/free-solid-svg-icons";
 
+function Actuality() {
 
-function Actuality({posts}) {
     const [photos, setPhotos] = useState();
-    const addActuality = async event => {
+    const notifications = useNotifications();
+
+    const form = useForm({
+        initialValues: {
+            title: '',
+            description: ''
+        },
+
+        validationRules: {
+            title: (title) => title.trim().length >= 5,
+            description: (description) => description.trim().length >= 12,
+        },
+    });
+
+    const addActuality = event => {
         event.preventDefault()
+        form.validate()
+        const data = new FormData();
+        if (photos) {
+            photos.forEach(
+                photo => {
+                    data.append(photo.name, photo);
+                }
+            )
+        }
+        data.append('title', event.target.title.value)
+        data.append('description', event.target.description.value)
+
         fetch(
             'http://127.0.0.1:8000/actuality',
             {
-                body: JSON.stringify({
-                    title: event.target.title.value,
-                    description: event.target.description.value,
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                body: data,
                 method: 'POST'
             }
-        ).then((result) => result.json().then(r => {
-            const actuality = r.id
-            if (photos) {
-                photos.forEach(i => fetch('https://content.dropboxapi.com/2/files/upload', {
-                    headers: {
-                        'Dropbox-API-Arg': JSON.stringify({
-                            "path": `/${i.path}`,
-                            "mode": "add",
-                            "autorename": true,
-                            "mute": false,
-                            "strict_conflict": false
-                        }),
-                        'Content-Type': 'application/octet-stream',
-                        'Authorization': `Bearer ${process.env.DROPBOX_API_KEY}`
-                    },
-                    method: 'POST',
-                    body: i,
-                }).then((response) => response.json().then(r => {
-                    fetch(
-                        'http://127.0.0.1:8000/photo',
-                        {
-                            body: JSON.stringify({
-                                id: r.id,
-                                actuality: actuality
-                            }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            method: 'POST'
-                        })
-                }))
-                    .catch(e => console.log(e)))
-            }
-        })).catch(() => new Error('Upload failed'));
+        ).then(r => {
+            form.reset()
+            notifications.showNotification({
+                title: 'Actualité enregistré !',
+                message: 'Votre actualité est disponible sur la page des actualités',
+                color: "green",
+                icon: <FontAwesomeIcon icon={faCheck}/>
+            })
+        })
     }
 
     return (
         <>
+            <Space h="xl" />
             <form onSubmit={addActuality}>
-                <TextInput label="Titre" required id={"title"}/>
-                <Textarea label="Description" id={"description"} required/>
+                <TextInput
+                    label="Titre"
+                    required
+                    id={"title"}
+                    error={form.errors.title && 'Veuillez saisir un titre'}
+                    value={form.values.title}
+                    onChange={(event) => form.setFieldValue('title', event.currentTarget.value)}
+                />
+                <Textarea
+                    label="Description"
+                    id={"description"}
+                    required
+                    error={form.errors.description && 'Veuillez saisir une description'}
+                    value={form.values.description}
+                    onChange={(event) => form.setFieldValue('description', event.currentTarget.value)}
+                />
                 <InputWrapper id="photo" label="Photo">
                     <Dropzone onDrop={(e) => setPhotos(e)} maxSize={3 * 720 ** 2}>
                         {(status) => (
@@ -80,31 +94,13 @@ function Actuality({posts}) {
                     return <Image key={photo.name} radius="md" src={URL.createObjectURL(photo)}/>
                 }) : ''
                 }
-                <Button type="submit">Envoyer</Button>
+                <Space h="xl" />
+                <Group position="right">
+                    <Button type="submit">Envoyer</Button>
+                </Group>
             </form>
-            <SimpleGrid cols={1}>
-                {posts.map(res =>
-                    <Paper key={res.id} padding="md" shadow="md" withBorder>
-                        <h2>{res.title + ' ' + new Date(res.createdAt).getDay() + '/' + new Date(res.createdAt).getMonth()}</h2>
-                        <Text dangerouslySetInnerHTML={{__html: res.description}}/>
-                        {res.photos ? res.photos.map(photo => {
-                            return <p>{photo.url}</p>
-                        }) : ''
-                        }
-                    </Paper>
-                )}
-            </SimpleGrid>
         </>
     )
-}
-
-export async function getStaticProps() {
-    const posts = await fetch('http://localhost:8000/actuality').then(r => r.json())
-    return {
-        props: {
-            posts
-        }
-    }
 }
 
 export default Actuality

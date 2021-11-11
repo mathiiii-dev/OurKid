@@ -26,7 +26,7 @@ class Photo
     /**
      * @ORM\Column(type="datetime_immutable")
      */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Actuality::class, inversedBy="photos")
@@ -55,13 +55,6 @@ class Photo
         return $this->createdAt;
     }
 
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setCreatedAt(): void
-    {
-        $this->createdAt = new DateTimeImmutable();
-    }
 
     public function getActuality(): ?Actuality
     {
@@ -73,5 +66,13 @@ class Photo
         $this->actuality = $actuality;
 
         return $this;
+    }
+
+    /**
+     * @param DateTimeImmutable $createdAt
+     */
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
     }
 }
