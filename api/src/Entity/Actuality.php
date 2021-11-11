@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ActualityRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,17 +24,22 @@ class Actuality
     /**
      * @ORM\Column(type="text")
      */
-    private $post;
+    private string $title;
 
     /**
      * @ORM\Column(type="datetime_immutable")
      */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /**
      * @ORM\OneToMany(targetEntity=Photo::class, mappedBy="actuality")
      */
     private $photos;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private string $description;
 
     public function __construct()
     {
@@ -45,19 +51,19 @@ class Actuality
         return $this->id;
     }
 
-    public function getPost(): ?string
+    public function getTitle(): ?string
     {
-        return $this->post;
+        return $this->title;
     }
 
-    public function setPost(string $post): self
+    public function setTitle(string $title): self
     {
-        $this->post = $post;
+        $this->title = $title;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -67,7 +73,7 @@ class Actuality
      */
     public function setCreatedAt(): void
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     /**
@@ -96,6 +102,18 @@ class Actuality
                 $photo->setActuality(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

@@ -14,18 +14,15 @@ export default function Kid() {
 
     const registerKid = async event => {
         event.preventDefault()
-        console.log(event)
+
         const res = await fetch(
             'http://127.0.0.1:8000/registration/kid',
             {
                 body: JSON.stringify({
                     firstname: event.target.firstname.value,
                     lastname: event.target.lastname.value,
-                    birthday: birthday
+                    birthday
                 }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 method: 'POST'
             }
         )
