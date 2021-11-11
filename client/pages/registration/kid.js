@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {useNotifications} from '@mantine/notifications';
 import 'dayjs/locale/fr';
+import {useForm} from "@mantine/hooks";
 
 export default function Kid() {
 
@@ -12,10 +13,22 @@ export default function Kid() {
 
     const notifications = useNotifications();
 
-    const registerKid = async event => {
-        event.preventDefault()
+    const form = useForm({
+        initialValues: {
+            firstname: '',
+            lastname: '',
+        },
 
-        const res = await fetch(
+        validationRules: {
+            firstname: (firstname) => firstname.trim().length >= 2,
+            lastname: (lastname) => lastname.trim().length >= 2
+        },
+    });
+
+    const registerKid = event => {
+        event.preventDefault()
+        form.validate()
+        fetch(
             'http://127.0.0.1:8000/registration/kid',
             {
                 body: JSON.stringify({
@@ -25,24 +38,17 @@ export default function Kid() {
                 }),
                 method: 'POST'
             }
-        )
-        const result = await res.json()
-
-        if (res.status !== 200) {
-            notifications.showNotification({
-                title: "Erreur lors de l'envoie du formaulaire",
-                message: result.error_description,
-                color: "red",
-                icon: <FontAwesomeIcon icon={faTimes}/>
-            })
-        } else {
-            notifications.showNotification({
-                title: 'Bravo !',
-                message: 'Vous avez été enregistré avec succes',
-                color: "green",
-                icon: <FontAwesomeIcon icon={faCheck}/>
-            })
-        }
+        ).then(r => {
+            if (r.status === 200) {
+                form.reset()
+                notifications.showNotification({
+                    title: 'Bravo !',
+                    message: 'Vous avez été enregistré avec succes',
+                    color: "green",
+                    icon: <FontAwesomeIcon icon={faCheck}/>
+                })
+            }
+        })
     }
 
     return (
@@ -51,15 +57,21 @@ export default function Kid() {
                 id="firstname"
                 required
                 label="Prénom"
+                error={form.errors.firstname && 'Veuillez saisir un prénom'}
             >
-                <Input id="firstname" placeholder="Adele"/>
+                <Input id="firstname" placeholder="Adele"
+                       value={form.values.firstname}
+                       onChange={(event) => form.setFieldValue('firstname', event.currentTarget.value)}/>
             </InputWrapper>
             <InputWrapper
                 id="lastname"
                 required
                 label="Nom"
+                error={form.errors.lastname && 'Veuillez saisir un nom'}
             >
-                <Input id="lastname" placeholder="Laurie"/>
+                <Input id="lastname" placeholder="Laurie"
+                       value={form.values.lastname}
+                       onChange={(event) => form.setFieldValue('lastname', event.currentTarget.value)}/>
             </InputWrapper>
             <DatePicker
                 placeholder="Choisir une date"
