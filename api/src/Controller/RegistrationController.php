@@ -99,14 +99,6 @@ class RegistrationController extends AbstractController
         return $this->json('Kid ' . $kid->getId() . ' linked to Parent ' . $parent->getId());
     }
 
-    #[Route('/kids', name: 'registration_kid_get', methods: 'GET')]
-    public function kids(): Response
-    {
-        return new Response($this->serializer->serialize(
-            $this->kidRepository->findAll(), 'json', ['groups' => 'kid_link'])
-        );
-    }
-
     #[Route('/parents', name: 'registration_parents_get', methods: 'GET')]
     public function parents(): Response
     {
