@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Repository\KidRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -97,14 +92,6 @@ class RegistrationController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json('Kid ' . $kid->getId() . ' linked to Parent ' . $parent->getId());
-    }
-
-    #[Route('/kids', name: 'registration_kid_get', methods: 'GET')]
-    public function kids(): Response
-    {
-        return new Response($this->serializer->serialize(
-            $this->kidRepository->findAll(), 'json', ['groups' => 'kid_link'])
-        );
     }
 
     #[Route('/parents', name: 'registration_parents_get', methods: 'GET')]

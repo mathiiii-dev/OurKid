@@ -9,7 +9,7 @@ function Feed({posts}) {
                         <h2>{res.title + ' ' + new Date(res.createdAt).getDate() + '/' + new Date(res.createdAt).getUTCMonth()}</h2>
                         <Text dangerouslySetInnerHTML={{__html: res.description}}/>
                         {res.photos ? res.photos.map(photo => {
-                            return <Image key={photo.id} src={process.env.BASE_URL+photo.url}/>
+                            return <Image key={photo.id} src={process.env.BASE_URL + photo.url}/>
                         }) : ''
                         }
                     </Paper>

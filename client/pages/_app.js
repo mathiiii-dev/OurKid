@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import {NotificationsProvider} from '@mantine/notifications';
-import {Container, MantineProvider} from '@mantine/core';
+import {Container} from '@mantine/core';
 
 function App({Component, pageProps}) {
     return (

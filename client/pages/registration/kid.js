@@ -2,7 +2,7 @@ import {InputWrapper, Button, Input} from "@mantine/core";
 import {DatePicker} from "@mantine/dates";
 import {useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faCheck} from "@fortawesome/free-solid-svg-icons";
 import {useNotifications} from '@mantine/notifications';
 import 'dayjs/locale/fr';
 import {useForm} from "@mantine/hooks";

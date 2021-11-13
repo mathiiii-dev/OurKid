@@ -40,6 +40,7 @@ class Kid
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank(message="Veuillez saisir une date de naissance")
+     * @Groups({"kid_link"})
      */
     private \DateTimeInterface $birthday;
 
