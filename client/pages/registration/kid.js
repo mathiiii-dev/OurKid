@@ -74,6 +74,10 @@ export default function Kid() {
                        onChange={(event) => form.setFieldValue('lastname', event.currentTarget.value)}/>
             </InputWrapper>
             <DatePicker
+                withSelect
+                minDate={new Date(1900, 0, 1)}
+                maxDate={new Date(2030, 0, 1)}
+                yearsRange={{ from: 1900, to:  2030}}
                 placeholder="Choisir une date"
                 label="Date d'anniversaire"
                 required
