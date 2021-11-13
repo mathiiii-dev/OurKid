@@ -1,5 +1,7 @@
-import {Textarea, Button, Title} from '@mantine/core';
+import {Textarea, Button, Title, Breadcrumbs, Anchor} from '@mantine/core';
 import {useForm} from "@mantine/hooks";
+import {faLongArrowAltLeft} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 function Resume({kid}) {
 
@@ -26,6 +28,9 @@ function Resume({kid}) {
 
     return (
         <>
+            <Anchor href={'/kid/list'}>
+                <FontAwesomeIcon icon={faLongArrowAltLeft}/> Retour
+            </Anchor>
             <Title order={2}>Le résumé de la journée de {kid.firstname}</Title>
             <form onSubmit={createResume}>
                 <Textarea

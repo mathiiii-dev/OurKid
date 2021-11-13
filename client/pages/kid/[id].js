@@ -5,7 +5,7 @@ function Kid({kid}) {
 
     return (
         <>
-            <p>{kid.firstname}</p>
+            <p>{kid ? kid.firstname : ''}</p>
         </>
     )
 }
