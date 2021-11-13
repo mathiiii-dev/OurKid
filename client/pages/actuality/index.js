@@ -2,7 +2,7 @@ import {Button, Group, Image, InputWrapper, Space, Text, Textarea, TextInput} fr
 import {useState} from "react";
 import {Dropzone} from "@mantine/dropzone";
 import {useForm} from '@mantine/hooks';
-import { useNotifications } from '@mantine/notifications';
+import {useNotifications} from '@mantine/notifications';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck} from "@fortawesome/free-solid-svg-icons";
 
@@ -56,7 +56,7 @@ function Actuality() {
 
     return (
         <>
-            <Space h="xl" />
+            <Space h="xl"/>
             <form onSubmit={addActuality}>
                 <TextInput
                     label="Titre"
@@ -94,7 +94,7 @@ function Actuality() {
                     return <Image key={photo.name} radius="md" src={URL.createObjectURL(photo)}/>
                 }) : ''
                 }
-                <Space h="xl" />
+                <Space h="xl"/>
                 <Group position="right">
                     <Button type="submit">Envoyer</Button>
                 </Group>

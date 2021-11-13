@@ -1,11 +1,36 @@
-import {Image, Paper, SimpleGrid, Text} from '@mantine/core';
-import {useRouter} from "next/router";
+import {Anchor, Paper, Space, Spoiler, Text, Title} from '@mantine/core';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faLongArrowAltLeft} from "@fortawesome/free-solid-svg-icons";
 
-function Kid({kid}) {
+function Kid({kid, resume}) {
 
     return (
         <>
+            <Anchor href={'/kid/list'}>
+                <FontAwesomeIcon icon={faLongArrowAltLeft}/> Retour
+            </Anchor>
             <p>{kid ? kid.firstname : ''}</p>
+            {
+                resume ?
+                    resume.map(
+                        r => {
+                            return (
+                                <>
+                                    <Space h="md"/>
+                                    <Paper padding="md" shadow="sm" withBorder>
+                                        <Title order={4}>Résumé de la journée
+                                            du {new Date(r.createdAt).getDate() + '/' + new Date(r.createdAt).getMonth()}</Title>
+                                        <Spoiler maxHeight={120}
+                                                 showLabel="Voir plus"
+                                                 hideLabel="Hide">
+                                            <Text>{r.resume}</Text>
+                                        </Spoiler>
+                                    </Paper>
+                                </>
+                            )
+                        }
+                    ) : ''
+            }
         </>
     )
 }
@@ -17,7 +42,7 @@ export async function getStaticPaths() {
     const paths = data.map(
         kid => {
             return {
-                params : {
+                params: {
                     id: kid.id.toString()
                 }
             }
@@ -29,11 +54,13 @@ export async function getStaticPaths() {
     }
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({params}) {
     const kid = await fetch(`http://localhost:8000/kid/${params.id}`).then(r => r.json())
+    const resume = await fetch(`http://localhost:8000/resume/kid/${params.id}`).then(r => r.json())
     return {
         props: {
-            kid
+            kid,
+            resume
         }
     }
 }

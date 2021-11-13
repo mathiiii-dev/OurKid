@@ -17,24 +17,24 @@ function Link({kids, parents}) {
     }
 
     return (
-            <form onSubmit={link}>
-                <Select
-                    searchable
-                    label="Parent"
-                    placeholder="Pick one"
-                    data={parents}
-                    value={parent} onChange={setParent}
-                />
-                <Select
-                    searchable
-                    label="Enfant"
-                    placeholder="Pick one"
-                    data={kids}
-                    value={kid} onChange={setKid}
-                />
+        <form onSubmit={link}>
+            <Select
+                searchable
+                label="Parent"
+                placeholder="Pick one"
+                data={parents}
+                value={parent} onChange={setParent}
+            />
+            <Select
+                searchable
+                label="Enfant"
+                placeholder="Pick one"
+                data={kids}
+                value={kid} onChange={setKid}
+            />
 
-                <Button type="submit">Associer</Button>
-            </form>
+            <Button type="submit">Associer</Button>
+        </form>
     )
 }
 

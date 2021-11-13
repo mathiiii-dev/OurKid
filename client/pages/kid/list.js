@@ -1,11 +1,7 @@
-import {Card, Image, Text, Badge, Button, Group, useMantineTheme, SimpleGrid} from '@mantine/core';
-import Link from 'next/link'
+import {Card, Text, Button, Group, useMantineTheme, SimpleGrid, Avatar} from '@mantine/core';
 
 function KidList({kids}) {
     const theme = useMantineTheme();
-    const secondaryColor = theme.colorScheme === 'dark'
-        ? theme.colors.dark[1]
-        : theme.colors.gray[7];
 
     return (
         <>
@@ -15,10 +11,13 @@ function KidList({kids}) {
                         kids.map(
                             k => {
                                 return (
-                                    <Card shadow="md" padding="lg">
+                                    <Card key={k.id} shadow="md" padding="lg">
                                         <Group position="apart" style={{marginBottom: 5, marginTop: theme.spacing.sm}}>
                                             <Text weight={500}>{k.firstname + ' ' + k.lastname}</Text>
+                                            <Avatar radius="xl"/>
                                         </Group>
+                                        <Text>Date d'anniversaire
+                                            : {new Date(k.birthday).getDate() + '/' + new Date(k.birthday).getMonth() + '/' + new Date(k.birthday).getFullYear()}</Text>
                                         <SimpleGrid cols={2} spacing="md">
                                             <Button href={`/kid/resume/${k.id}`} component="a" variant="light"
                                                     color="blue" style={{marginTop: 14}}>

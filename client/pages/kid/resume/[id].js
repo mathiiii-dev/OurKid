@@ -1,7 +1,8 @@
-import {Textarea, Button, Title, Breadcrumbs, Anchor} from '@mantine/core';
+import {Textarea, Button, Title, Anchor} from '@mantine/core';
 import {useForm} from "@mantine/hooks";
-import {faLongArrowAltLeft} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faLongArrowAltLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {useNotifications} from '@mantine/notifications';
 
 function Resume({kid}) {
 
@@ -14,16 +15,29 @@ function Resume({kid}) {
         },
     });
 
+    const notifications = useNotifications();
+
     const createResume = event => {
-        form.validate()
         event.preventDefault()
-        fetch(
-            `http://localhost:8000/resume/kid/${kid.id}`,
-            {
-                body: event.target.resume.value,
-                method: 'POST'
-            }
-        ).then(r => r.json())
+        if (form.validate()) {
+            fetch(
+                `http://localhost:8000/resume/kid/${kid.id}`,
+                {
+                    body: event.target.resume.value,
+                    method: 'POST'
+                }
+            ).then(r => {
+                form.reset()
+                if (r.status === 200) {
+                    notifications.showNotification({
+                        title: 'Bravo !',
+                        message: 'Votre résumé a bien été enregistré',
+                        color: "green",
+                        icon: <FontAwesomeIcon icon={faCheck}/>
+                    })
+                }
+            })
+        }
     }
 
     return (
@@ -55,7 +69,7 @@ export async function getStaticPaths() {
     const paths = data.map(
         kid => {
             return {
-                params : {
+                params: {
                     id: kid.id.toString()
                 }
             }
@@ -67,7 +81,7 @@ export async function getStaticPaths() {
     }
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({params}) {
     const kid = await fetch(`http://localhost:8000/kid/${params.id}`).then(r => r.json())
     return {
         props: {
