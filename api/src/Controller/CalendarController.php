@@ -6,6 +6,7 @@ use App\Entity\Calendar;
 use App\Repository\CalendarRepository;
 use App\Repository\KidRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,20 @@ class CalendarController extends AbstractController
     public function calendars(): JsonResponse
     {
         return $this->json(json_decode($this->serializer->serialize($this->calendarRepository->findAll(), 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]))
+        );
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    #[Route('/calendar/{id}', name: 'calendars', methods: 'GET')]
+    public function calendar(int $id): JsonResponse
+    {
+        return $this->json(json_decode($this->serializer->serialize($this->calendarRepository->findKidsCalendarForParent($id), 'json', [
                 'circular_reference_handler' => function ($object) {
                     return $object->getId();
                 }
