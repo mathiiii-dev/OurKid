@@ -60,7 +60,7 @@ class CalendarController extends AbstractController
     /**
      * @throws NonUniqueResultException
      */
-    #[Route('/calendar/{id}', name: 'calendars', methods: 'GET')]
+    #[Route('/calendar/{id}', name: 'calendar_kid', methods: 'GET')]
     public function calendar(int $id): JsonResponse
     {
         return $this->json(json_decode($this->serializer->serialize($this->calendarRepository->findKidsCalendarForParent($id), 'json', [
@@ -69,5 +69,22 @@ class CalendarController extends AbstractController
                 }
             ]))
         );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/calendar/{id}', name: 'patch_calendar_kid', methods: 'PATCH')]
+    public function calendarPatch(Request $request, int $id): JsonResponse
+    {
+        $content = json_decode($request->getContent(), true);
+        $kid = $this->kidRepository->find(['id' => $content['kidId']]);
+        $calendar = $this->calendarRepository->find(['id' => $id]);
+        $calendar->setDay(new \DateTime($content['day']))
+            ->setArrival(new \DateTime($content['arrival']))
+            ->setDeparture(new \DateTime($content['departure']))
+            ->setKid($kid);
+        $this->entityManager->flush();
+        return $this->json('calendar updated');
     }
 }
