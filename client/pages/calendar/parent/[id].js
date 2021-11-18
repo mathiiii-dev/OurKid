@@ -9,22 +9,24 @@ function Calendar({calendars}) {
     const dayFormat = (date, culture, localizer) => localizer.format(date, 'DD', culture);
 
     const calendarEvents = []
+    if(calendars) {
+        calendars.forEach(
+            c => {
 
-    calendars.forEach(
-        c => {
+                const day = new Date(c.day)
+                const arrival = new Date(moment(`${c.day} ${c.arrival}`, 'YYYY-MM-DD HH:mm:ss').format())
+                const departure = new Date(moment(`${c.day} ${c.departure}`, 'YYYY-MM-DD HH:mm:ss').format())
+                calendarEvents.push({
+                        title: c.firstname,
+                        start: new Date(day.getFullYear(), day.getMonth(), day.getDate(), arrival.getHours(), arrival.getMinutes()),
+                        end: new Date(day.getFullYear(), day.getMonth(), day.getDate(), departure.getHours(), departure.getMinutes()),
+                        color: c.color
+                    }
+                )
+            }
+        )
+    }
 
-            const day = new Date(c.day)
-            const arrival = new Date(moment(`${c.day} ${c.arrival}`, 'YYYY-MM-DD HH:mm:ss').format())
-            const departure = new Date(moment(`${c.day} ${c.departure}`, 'YYYY-MM-DD HH:mm:ss').format())
-            calendarEvents.push({
-                    title: c.firstname,
-                    start: new Date(day.getFullYear(), day.getMonth(), day.getDate(), arrival.getHours(), arrival.getMinutes()),
-                    end: new Date(day.getFullYear(), day.getMonth(), day.getDate(), departure.getHours(), departure.getMinutes()),
-                    color: c.color
-                }
-            )
-        }
-    )
     return (
         <>
             <BigCalendar
