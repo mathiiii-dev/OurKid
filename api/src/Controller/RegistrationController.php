@@ -67,7 +67,7 @@ class RegistrationController extends AbstractController
     {
         /** @var Kid $kid */
         $kid = $this->serializer->deserialize($request->getContent(), Kid::class, 'json');
-
+        $kid->setColor($this->random_color());
         $errors = $this->validator->validate($kid);
 
         if (count($errors) > 0) {
@@ -100,5 +100,15 @@ class RegistrationController extends AbstractController
         return new Response($this->serializer->serialize(
             $this->userRepository->findAll(), 'json', ['groups' => 'parent_link'])
         );
+    }
+
+    function random_color_part(): string
+    {
+        return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
+    }
+
+    function random_color(): string
+    {
+        return $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
     }
 }

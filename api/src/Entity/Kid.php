@@ -59,6 +59,11 @@ class Kid
      */
     private $dailyResumes;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $color;
+
     #[Pure] public function __construct()
     {
         $this->parent = new ArrayCollection();
@@ -187,6 +192,18 @@ class Kid
                 $dailyResume->setKid(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        $this->color = $color;
 
         return $this;
     }
